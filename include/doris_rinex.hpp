@@ -157,7 +157,11 @@ class DorisObsRinex {
   }
 
   /** Return a vecot of strings where each string is a 4-char id for the whole 
-   * list of beacons in the RINEX instance 
+   * list of beacons in the RINEX instance
+   *
+   * Warning!
+   * If the instance goes out-of-scope, the vector returned will have dangling 
+   * pointers and if used create UB.
    */
   const std::vector<const char *> beacons_4charids() const noexcept {
     std::vector<const char *> vec;
@@ -167,6 +171,9 @@ class DorisObsRinex {
     }
     return vec;
   }
+
+  /* number of beacons stored */
+  int num_beacons() const noexcept {return m_stations.size();}
 
   /* @brief Constructor from filename
    *
