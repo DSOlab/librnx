@@ -150,6 +150,23 @@ class DorisObsRinex {
   const char *antenna_number() const noexcept {
     return m_char_pool + m_antenna_number_at;
   }
+  
+  /* Datetime of first observation in RINEX */
+  auto time_first_obs() const noexcept {
+    return m_time_of_first_obs;
+  }
+
+  /** Return a vecot of strings where each string is a 4-char id for the whole 
+   * list of beacons in the RINEX instance 
+   */
+  const std::vector<const char *> beacons_4charids() const noexcept {
+    std::vector<const char *> vec;
+    vec.reserve(m_stations.size());
+    for (const auto &it : m_stations) {
+      vec.push_back(it.id());
+    }
+    return vec;
+  }
 
   /* @brief Constructor from filename
    *
