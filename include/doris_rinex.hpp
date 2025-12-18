@@ -4,6 +4,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
+#include <cstring>
 
 #include "doris_rinex_details.hpp"
 #include "obstypes.hpp"
@@ -174,6 +175,20 @@ class DorisObsRinex {
 
   /* number of beacons stored */
   int num_beacons() const noexcept {return m_stations.size();}
+
+  /* Beacon internal id (e.g. 'D31') to 4-char id (e.g. 'DIOB').
+   *
+   * The function will return a pointer to the instance's internal m_stations 
+   * vector, hence beware that the (returned) pointer will be dangling once 
+   * the calling instance goes out of scope.
+   */
+  const char *id2name(const char *_id) const noexcept {
+    for (const auto &bcn : m_stations) {
+      if (!std::strncmp(_id, bcn.id(), 3))
+        return bcn.id();
+    }
+    return nullptr;
+  }
 
   /* @brief Constructor from filename
    *
