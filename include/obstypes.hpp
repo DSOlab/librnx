@@ -1,42 +1,11 @@
 #ifndef __DSO_SPACE_GEODESY_OBSERVATION_TYPES_HPP__
 #define __DSO_SPACE_GEODESY_OBSERVATION_TYPES_HPP__
 
+#include "sysnsats/doris.hpp"
+
 namespace dso {
 
-/** @enum DorisObservationType
- *  DORIS Observation Types as defined in RINEX DORIS 3.0 (Issue 1.7)
- */
-enum class DorisObservationType : char {
-  phase,              ///< L
-  pseudorange,        ///< C
-  power_level,        ///< W power level received at each frequency, unit dBm
-  frequency_offset,   ///< F relative frequency offset of the receiver’s
-                      ///< oscillator (f-f0) / f0, unit 10e-11
-  ground_pressure,    ///< P ground pressure at the station, unit 100 Pa (mBar)
-  ground_temperature, ///< T ground temperature at the station, unit degree
-                      ///< Celsius
-  ground_humidity,    ///< H ground humidity at the station, unit percent
-}; /* enum ObservationType */
-
-/** @brief Translate a DorisObservationType to a character.
- *  
- *  @param[in] obs A DorisObservationType to translate to char
- *  @return A character that corresposnds to the given DorisObservationType.
- *
- *  @throw std::runtime_error if no corresponding char is found for the given
- *         ObservationType.
- */
-char dobstype_to_char(DorisObservationType o);
-
-/** @brief Translate a character to a DorisObservationType.
- * 
- * @param[in] c A char corresponging to a DorisObservationType
- * @return A DorisObservationType that corresponds to the given character.
- *
- * @throw std::runtime_error if no corresponding DorisObservationType is 
- *        found for the given char.
- */
-DorisObservationType char_to_dobstype(char c);
+using DorisObservationType = SatelliteSystemObservationType<SATELLITE_SYSTEM::DORIS>::ObservationType;
 
 /** @bried Check if a DorisObservationType goes with a frequuency. 
  *

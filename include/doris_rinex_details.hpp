@@ -2,6 +2,7 @@
 #define __DSO_DORIS_RINEX_DETAILS_PR_HPP__
 
 #include <limits>
+#include <stdexcept>
 #include "datetime/calendar.hpp"
 
 namespace dso {
@@ -187,6 +188,16 @@ struct BeaconObservations {
 
   explicit BeaconObservations(int size_hint = 10) noexcept {
     m_values.reserve(size_hint);
+  }
+
+  const RinexObservationValue &fetch(int obs_idx) const {
+    if (obs_idx>(int)m_values.size()) [[unlikely]] {
+      throw std::runtime_error("[ERROR] Observation index is out of range (traceback "+ std::string(__func__) + ")\n");
+    }
+    return m_values[obs_idx];
+  }
+  double fetchv(int obs_idx) const {
+    return m_values[obs_idx].m_value;
   }
 
   const char *id() const noexcept { return m_beacon_id; }

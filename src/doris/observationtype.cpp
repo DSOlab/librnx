@@ -2,51 +2,6 @@
 #include <cstdio>
 #include "obstypes.hpp"
 
-
-char dso::dobstype_to_char(dso::DorisObservationType o) {
-  switch (o) {
-    case (DorisObservationType::phase):
-      return 'L';
-    case (DorisObservationType::pseudorange):
-      return 'C';
-    case (DorisObservationType::power_level):
-      return 'W';
-    case (DorisObservationType::frequency_offset):
-      return 'F';
-    case (DorisObservationType::ground_pressure):
-      return 'P';
-    case (DorisObservationType::ground_temperature):
-      return 'T';
-    case (DorisObservationType::ground_humidity):
-      return 'H';
-    default:
-      throw std::runtime_error(
-          "[ERROR] Cannot translate DorisObservationType to char");
-  }
-}
-
-dso::DorisObservationType dso::char_to_dobstype(char c) {
-  switch (c) {
-    case ('L'):
-      return DorisObservationType::phase;
-    case ('C'):
-      return DorisObservationType::pseudorange;
-    case ('W'):
-      return DorisObservationType::power_level;
-    case ('F'):
-      return DorisObservationType::frequency_offset;
-    case ('P'):
-      return DorisObservationType::ground_pressure;
-    case ('T'):
-      return DorisObservationType::ground_temperature;
-    case ('H'):
-      return DorisObservationType::ground_humidity;
-    default:
-      throw std::runtime_error(
-          "[ERROR] Cannot translate char to DorisObservationType");
-  }
-}
-
 /** The function will check the type DorisObservationType instance, to see if
  *  frequency information is needed for this DorisObservationType. That is,
  *  it will return true if type is any of:
@@ -90,6 +45,7 @@ dso::DorisObservationCode::DorisObservationCode(dso::DorisObservationType type,
 }
 
 char *dso::DorisObservationCode::to_str(char *buffer) const noexcept {
-  std::sprintf(buffer, "%c%1d", dobstype_to_char(m_type), (int)m_freq);
+  using DorisObsType = dso::SatelliteSystemObservationType<dso::SATELLITE_SYSTEM::DORIS>;
+  std::sprintf(buffer, "%c%1d", DorisObsType::obst2char(m_type), (int)m_freq);
   return buffer;
 }

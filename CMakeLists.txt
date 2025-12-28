@@ -11,9 +11,10 @@ project(
 find_package(Eigen3   REQUIRED)
 find_package(geodesy  REQUIRED)
 find_package(datetime REQUIRED)
+find_package(sysnsats REQUIRED)
 
 # Pass the library dependencies to subdirectories
-set(PROJECT_DEPENDENCIES Eigen3::Eigen geodesy datetime)
+set(PROJECT_DEPENDENCIES Eigen3::Eigen sysnsats geodesy datetime)
 
 # Define an option for building tests (defaults to ON)
 option(BUILD_TESTING "Enable building of tests" ON)

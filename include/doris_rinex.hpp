@@ -1,10 +1,11 @@
 #ifndef __DSO_DORIS_RINEX_V3_HPP__
 #define __DSO_DORIS_RINEX_V3_HPP__
 
+#include <algorithm>
+#include <cstring>
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include <cstring>
 
 #include "doris_rinex_details.hpp"
 #include "obstypes.hpp"
@@ -109,7 +110,10 @@ class DorisObsRinex {
   }
 
   /** @brief Clear the stream and go to END OF HEADER */
-  void goto_data_block() noexcept {m_stream.clear(); m_stream.seekg(m_end_of_head);}
+  void goto_data_block() noexcept {
+    m_stream.clear();
+    m_stream.seekg(m_end_of_head);
+  }
 
   /** @brief Read the RINEX's header, and collect all metadata */
   int read_header() noexcept;
@@ -151,17 +155,15 @@ class DorisObsRinex {
   const char *antenna_number() const noexcept {
     return m_char_pool + m_antenna_number_at;
   }
-  
-  /* Datetime of first observation in RINEX */
-  auto time_first_obs() const noexcept {
-    return m_time_of_first_obs;
-  }
 
-  /** Return a vecot of strings where each string is a 4-char id for the whole 
+  /* Datetime of first observation in RINEX */
+  auto time_first_obs() const noexcept { return m_time_of_first_obs; }
+
+  /** Return a vecot of strings where each string is a 4-char id for the whole
    * list of beacons in the RINEX instance
    *
    * Warning!
-   * If the instance goes out-of-scope, the vector returned will have dangling 
+   * If the instance goes out-of-scope, the vector returned will have dangling
    * pointers and if used create UB.
    */
   const std::vector<const char *> beacons_4charids() const noexcept {
@@ -174,20 +176,35 @@ class DorisObsRinex {
   }
 
   /* number of beacons stored */
-  int num_beacons() const noexcept {return m_stations.size();}
+  int num_beacons() const noexcept { return m_stations.size(); }
 
   /* Beacon internal id (e.g. 'D31') to 4-char id (e.g. 'DIOB').
    *
-   * The function will return a pointer to the instance's internal m_stations 
-   * vector, hence beware that the (returned) pointer will be dangling once 
+   * The function will return a pointer to the instance's internal m_stations
+   * vector, hence beware that the (returned) pointer will be dangling once
    * the calling instance goes out of scope.
    */
   const char *id2name(const char *_id) const noexcept {
     for (const auto &bcn : m_stations) {
-      if (!std::strncmp(_id, bcn.id(), 3))
-        return bcn.id();
+      if (!std::strncmp(_id, bcn.code(), 3)) return bcn.id();
     }
     return nullptr;
+  }
+  auto find_beacon_by_code(const char *_code) const noexcept {
+    for (auto it = m_stations.cbegin(); it != m_stations.cend(); ++it) {
+      if (!std::strncmp(_code, it->code(), 3)) {
+        return it;
+      }
+    }
+    return m_stations.cend();
+  }
+
+  [[nodiscard]]
+  int observation_index(const DorisObservationCode &obst) const noexcept {
+    auto it = std::find(m_obs_codes.cbegin(), m_obs_codes.cend(), obst);
+    return (it != m_obs_codes.cend())
+               ? (std::distance(m_obs_codes.cbegin(), it))
+               : (-1);
   }
 
   /* @brief Constructor from filename
